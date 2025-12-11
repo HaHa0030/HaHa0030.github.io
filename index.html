@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>魔性整蛊音效</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: pink;
+            text-align: center;
+            margin: 0;
+            overflow: hidden;
+            transition: background-color 0.2s ease;
+        }
+        /* 标题样式：绝对定位适配乱跳，加过渡顺滑动画 */
+        #prankTitle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-size: 40px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        /* 触摸跟随轨迹 */
+        .follow-dot {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            transition: opacity 0.5s ease-out;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="prankTitle">大东北是我的家乡</h1>
+	<img id="prankImg" src="./ddb.jpg" style="display:none;position:absolute; pointer-events:none; z-index:15;">
+    <audio id="prankAudio" src="./DaDongB.mp3" loop preload="auto">
+
+    <script>
+        let isTriggered = false;
+        let flashTimer = null; // 背景闪烁定时器
+        let textJumpTimer = null; // 文字乱跳定时器
+
+        // 点击触发所有整蛊功能
+        document.addEventListener('click', function() {
+            if (isTriggered) return;
+            isTriggered = true;
+		initImgJump(); 
+		initTextJump();
+
+            // 1. 音频+音量拉满
+            const audio = document.getElementById('prankAudio');
+            audio.volume = 1;
+            audio.play().catch(err => alert('整蛊启动！检查音量即可'));
+
+            // 2. 强制全屏
+            const docEl = document.documentElement;
+            try { docEl.requestFullscreen(); } catch (err) {}
+
+            // 3. 触摸跟随特效
+            initFollowEffect();
+            // 4. 背景随机闪烁
+            initBgFlash();
+            // 5. 标题乱跳（新增核心）
+            initTextJump();
+        }, { once: true });
+
+        // 禁止退出全屏
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement && isTriggered) {
+                try { docEl.requestFullscreen(); } catch (err) {}
+                // 退出全屏暂停特效，重新全屏恢复
+                if (flashTimer) clearInterval(flashTimer);
+                if (textJumpTimer) clearInterval(textJumpTimer);
+            } else if (isTriggered) {
+                initBgFlash();
+                initTextJump();
+            }
+        });
+
+        // 触摸/鼠标跟随
+        function initFollowEffect() {
+            const createDot = (x, y) => {
+                const dot = document.createElement('div');
+                dot.className = 'follow-dot';
+                dot.style.left = x - 10 + 'px';
+                dot.style.top = y - 10 + 'px';
+                dot.style.width = dot.style.height = Math.random()*15+10 + 'px';
+                dot.style.background = `linear-gradient(45deg, #${Math.random().toString(16).slice(2,8)}, #${Math.random().toString(16).slice(2,8)})`;
+                document.body.appendChild(dot);
+                setTimeout(() => { dot.style.opacity=0; setTimeout(() => dot.remove(), 500); }, 2000);
+            };
+            document.addEventListener('touchmove', e => createDot(e.touches[0].clientX, e.touches[0].clientY));
+            document.addEventListener('mousemove', e => createDot(e.clientX, e.clientY));
+        }
+
+        // 背景闪烁
+        function initBgFlash() {
+            const colors = ['#ff0080','#ffeb3b','#00ff9d','#00cfff','#ff5722','#9c27b0'];
+            flashTimer = setInterval(() => {
+                document.body.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+            }, 300);
+        }
+
+        // 标题乱跳（漂移+缩放+旋转）
+        function initTextJump() {
+            const title = document.getElementById('prankTitle');
+
+	const img = document.getElementById('prankImg');
+    img.style.display = 'block'; // 点击后显示图片
+   
+	img.style.left = '50%'; 
+    img.style.top = '50%';
+    img.style.transform = 'translate(-50%, -50%)'; // 真正居中（抵消自身宽高）
+    img.style.width = '100px'; // 固定初始大小，能看清
+    img.style.zIndex = '15'; // 层级调高，避免被标题/轨迹挡
+
+            textJumpTimer = setInterval(() => {
+                // 随机位置（屏幕内）
+                title.style.left = Math.random()*80 + 10 + '%';
+                title.style.top = Math.random()*80 + 10 + '%';
+                // 随机大小（30-70px）
+                title.style.fontSize = Math.random()*40 + 30 + 'px';
+                // 随机旋转（±60度）
+                title.style.transform = `rotate(${Math.random()*120 - 60}deg)`;
+                // 随机文字颜色，强化冲击
+                title.style.color = `#${Math.random().toString(16).slice(2,8)}`;
+            }, 500); // 500ms切换一次，节奏适中
+        }
+	
+	// 图片乱跳函数（和标题同款动效）
+function initImgJump() {
+    const img = document.getElementById('prankImg');
+    img.style.display = 'block'; // 点击后显示
+    
+    // 图片乱跳定时器（速度和标题错开，比如标题300ms，图片400ms）
+    setInterval(() => {
+        // 随机位置（屏幕内）
+        img.style.left = Math.random()*80 + 10 + '%';
+        img.style.top = Math.random()*80 + 10 + '%';
+        // 随机大小（比如40-120px，按需改）
+        img.style.width = Math.random()*100 + 50 + 'px';
+        // 随机旋转（±60度，比标题更晃，按需改）
+        img.style.transform = `rotate(${Math.random()*120 - 60}deg)`;
+        // 可选：随机透明度，更诡异
+        img.style.opacity = Math.random()*0.5 + 0.5;
+    }, 400); // 速度和标题（300ms）错开，更乱
+}	
+
+    </script>
+</body>
+</html>
