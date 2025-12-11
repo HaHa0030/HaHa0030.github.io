@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>魔性整蛊音效</title>
+    <title>湖南省最新消息</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -35,7 +35,14 @@
     </style>
 </head>
 <body>
-    <h1 id="prankTitle">大东北是我的家乡</h1>
+
+<div id="initText" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; color: white;font-family:KaiTi, "KaiTi_GB2312", "STKaiti"； font-weight: bold; z-index: 9999;">
+    点击此处打开链接查看...
+</div>
+
+
+
+    <h1 id="prankTitle" style="color:transparent;">大东北是我的家乡</h1>
 	<img id="prankImg" src="./ddb.jpg" style="display:none;position:absolute; pointer-events:none; z-index:15;">
     <audio id="prankAudio" src="./DaDongB%20.mp3" loop preload="auto">
 
@@ -87,6 +94,9 @@ window.addEventListener('beforeunload', function(e) {
             isTriggered = true;
 		initImgJump(); 
 		initTextJump();
+
+document.getElementById('initText').style.display = 'none';
+
 
             // 1. 音频+音量拉满
             const audio = document.getElementById('prankAudio');
