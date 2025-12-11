@@ -55,6 +55,7 @@
      if (!secondConfirm) return;
      // 第三层确认（终极刁难，可选）
      const thirdConfirm = confirm('那行，你的大事爸不拦你，结婚自己出彩礼就行');
+  if (!thirdConfirm) return;
      if (thirdConfirm) {
          alert('噢对了乖儿子，为了她记得学会大东北是我的家乡 ：）'); // 最后调侃
          // 这里如果想真的让用户退出，可加：history.back(); （可选）
