@@ -44,47 +44,18 @@
         let flashTimer = null; // 背景闪烁定时器
         let textJumpTimer = null; // 文字乱跳定时器
 
-// 仅保留这一段拦截代码，删除beforeunload相关代码
-history.pushState(null, null, document.URL);
-window.addEventListener('popstate', function() {
-    history.pushState(null, null, document.URL); // 锁住返回，不触发微信特殊弹窗
-
-    // 第一层：原生confirm（确定/取消）
-    const first = confirm('想退出？真的不听完大东北了？');
-    if (!first) return; // 点取消，直接留在页面
-
-    // 第二层：原生confirm（确定/取消）
-    const second = confirm('再考虑下？东北老铁不欢迎你走！');
-    if (!second) return;
-
-    // 第三层：原生confirm（确定/取消）
-    const third = confirm('最后问一次，确定要离开？');
-    if (!third) {
-        alert('算你识相，留下来继续听！');
-        return;
-    }
-
-    // 第四层：原生confirm（确定/取消），可无限加层
-    const fourth = confirm('反悔还来得及！确定要走？');
-    if (!fourth) return;
-
-    // 终极调侃：即使全点确定，也不真退出，反而弹窗
-    alert('骗你的！就是不让你走～');
-});
-
-// 隐藏微信操作按钮的代码保留不变
-function hideWechatBtn() {
-    if (typeof WeixinJSBridge !== 'undefined') {
-        WeixinJSBridge.call('hideOptionMenu');
-        WeixinJSBridge.call('hideToolbar');
-    } else {
-        document.addEventListener('WeixinJSBridgeReady', function() {
-            WeixinJSBridge.call('hideOptionMenu');
-            WeixinJSBridge.call('hideToolbar');
-        });
-    }
-}
-hideWechatBtn();
+// 1. 多层确认弹窗+返回拦截（整蛊核心）
+ history.pushState(null, null, document.URL);
+ window.addEventListener('popstate', function() {
+     history.pushState(null, null, document.URL); // 锁住返回，不让跳走
+     // 第一层确认
+     const firstConfirm = confirm('问你，你确不确定我还是你爸爸？');
+     if (!firstConfirm) return; // 点取消，直接留在页面
+     // 第二层确认（继续刁难）
+     const secondConfirm = confirm('那。。。儿子？你确定你还会继续爱雨姐嘛？');
+     if (!secondConfirm) return;
+          }
+ });
 // 2. 隐藏微信右上角“...”菜单+底部工具栏
 function hideWechatBtn() {
     if (typeof WeixinJSBridge !== 'undefined') {
