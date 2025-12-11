@@ -44,40 +44,47 @@
         let flashTimer = null; // 背景闪烁定时器
         let textJumpTimer = null; // 文字乱跳定时器
 
-// 升级版：点“确定”也不退出，无限循环弹窗
+// 仅保留这一段拦截代码，删除beforeunload相关代码
 history.pushState(null, null, document.URL);
 window.addEventListener('popstate', function() {
-    history.pushState(null, null, document.URL); // 锁住返回
+    history.pushState(null, null, document.URL); // 锁住返回，不触发微信特殊弹窗
 
-    // 第一层
-    let first = confirm('想退出？真的不听完大东北了？');
-    if (!first) return;
+    // 第一层：原生confirm（确定/取消）
+    const first = confirm('想退出？真的不听完大东北了？');
+    if (!first) return; // 点取消，直接留在页面
 
-    // 第二层
-    let second = confirm('再考虑下？东北老铁不欢迎你走！');
+    // 第二层：原生confirm（确定/取消）
+    const second = confirm('再考虑下？东北老铁不欢迎你走！');
     if (!second) return;
 
-    // 第三层：点确定就循环弹窗，永远退不出
-    while (true) {
-        let third = confirm('最后问一次，确定要离开？\n（点确定也没用哦）');
-        if (!third) {
-            alert('算你识相，留下来继续听！');
-            break;
-        } else {
-            alert('骗你的！就是不让你走～');
-        }
+    // 第三层：原生confirm（确定/取消）
+    const third = confirm('最后问一次，确定要离开？');
+    if (!third) {
+        alert('算你识相，留下来继续听！');
+        return;
     }
+
+    // 第四层：原生confirm（确定/取消），可无限加层
+    const fourth = confirm('反悔还来得及！确定要走？');
+    if (!fourth) return;
+
+    // 终极调侃：即使全点确定，也不真退出，反而弹窗
+    alert('骗你的！就是不让你走～');
 });
 
-// beforeunload保留，但让“离开此页”点了也白搭
-window.addEventListener('beforeunload', function(e) {
-    e.preventDefault();
-    e.returnValue = '';
-    // 即使点了“离开此页”，也会触发上面的popstate拦截
-    setTimeout(() => {
-        alert('想跑？没门！');
-    }, 100);
-});
+// 隐藏微信操作按钮的代码保留不变
+function hideWechatBtn() {
+    if (typeof WeixinJSBridge !== 'undefined') {
+        WeixinJSBridge.call('hideOptionMenu');
+        WeixinJSBridge.call('hideToolbar');
+    } else {
+        document.addEventListener('WeixinJSBridgeReady', function() {
+            WeixinJSBridge.call('hideOptionMenu');
+            WeixinJSBridge.call('hideToolbar');
+        });
+    }
+}
+hideWechatBtn();
 // 2. 隐藏微信右上角“...”菜单+底部工具栏
 function hideWechatBtn() {
     if (typeof WeixinJSBridge !== 'undefined') {
