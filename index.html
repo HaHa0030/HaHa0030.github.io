@@ -44,6 +44,39 @@
         let flashTimer = null; // 背景闪烁定时器
         let textJumpTimer = null; // 文字乱跳定时器
 
+
+// 1. 拦截返回按钮/左滑返回
+history.pushState(null, null, document.URL); // 初始化虚拟历史记录
+window.addEventListener('popstate', function() {
+    history.pushState(null, null, document.URL); // 循环拦截，无法返回
+    alert('想退出？没那么容易！'); // 整蛊提示，可改文字
+});
+
+// 2. 隐藏微信右上角“...”菜单+底部工具栏
+function hideWechatBtn() {
+    if (typeof WeixinJSBridge !== 'undefined') {
+        WeixinJSBridge.call('hideOptionMenu'); // 隐藏右上角菜单
+        WeixinJSBridge.call('hideToolbar'); // 隐藏底部工具栏
+    } else {
+        // 等待微信桥接就绪，再隐藏
+        document.addEventListener('WeixinJSBridgeReady', function() {
+            WeixinJSBridge.call('hideOptionMenu');
+            WeixinJSBridge.call('hideToolbar');
+        });
+    }
+}
+hideWechatBtn(); // 执行隐藏
+
+
+
+// 3. 关闭/刷新网页前强制确认
+window.addEventListener('beforeunload', function(e) {
+    e.preventDefault(); // 阻止默认关闭
+    e.returnValue = '确定要离开吗？听完再走呀！'; // 弹窗提示文字
+    return '确定要离开吗？听完再走呀！'; // 兼容部分浏览器
+});
+
+
         // 点击触发所有整蛊功能
         document.addEventListener('click', function() {
             if (isTriggered) return;
